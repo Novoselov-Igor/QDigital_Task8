@@ -8,6 +8,7 @@ class MainController extends Controller
 {
     public function mainAction()
     {
-        $this->view->render('Главная страница');
+        $vars = ['test' => 'test'];
+        $this->view->render('Главная страница', $vars);
     }
 }
