@@ -1,5 +1,5 @@
 <?php
-$pdo = require_once '../config/connect.php';
+$pdo = require_once '../config/db.php';
 
 $pdo->exec('CREATE table IF NOT EXISTS users (
     id INT PRIMARY KEY  AUTO_INCREMENT,
