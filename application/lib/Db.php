@@ -31,7 +31,6 @@ class Db
                 $stmt->bindValue(':' . $key, $val);
             }
         }
-
         $stmt->execute();
         return $stmt;
     }
@@ -42,9 +41,9 @@ class Db
         return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function column($sql, $params = [])
+    public function fetch($sql, $params = [])
     {
         $result = $this->query($sql, $params);
-        return $result->fetchColumn();
+        return $result->fetch(PDO::FETCH_ASSOC);
     }
 }
