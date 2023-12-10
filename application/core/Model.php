@@ -6,9 +6,21 @@ use application\lib\Db;
 
 abstract class Model
 {
-    public $db;
+    protected $db;
+    protected $table;
+    protected $fillable = [];
+
     public function __construct()
     {
         $this->db = new Db();
+    }
+
+    public function create($data)
+    {
+
+    }
+
+    protected function insert()
+    {
     }
 }
