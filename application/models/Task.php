@@ -65,7 +65,7 @@ class Task extends Model
         if (isset($id)) {
             $sgl = 'SELECT * FROM ' . $this->table . ' WHERE `user_id` = :id';
 
-            return $this->db->row($sgl, ['id' => $_COOKIE['userId']]);
+            return $this->db->row($sgl, ['id' => $id]);
         }
         return '';
     }

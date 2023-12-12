@@ -37,14 +37,21 @@ class AuthController extends Controller
             exit;
         }
 
-        $password = password_hash($password, PASSWORD_DEFAULT);
         $data = [
             'login' => $login,
-            'password' => $password
+            'password' => password_hash($password, PASSWORD_DEFAULT)
         ];
 
         $user = new User();
+
         $user->create($data);
+
+        if ($user->comparePasswords($password)) {
+            $user = $user->getUser();
+            $_SESSION['userId'] = $user['id'];
+        } else {
+            header('Location: /auth');
+        }
 
         header('Location: /');
     }

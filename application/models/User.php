@@ -3,6 +3,7 @@
 namespace application\models;
 
 use application\core\Model;
+use mysql_xdevapi\Exception;
 
 class User extends Model
 {
@@ -18,20 +19,12 @@ class User extends Model
         return $this->db->query($sql, ['login' => $this->fillable['login']]);
     }
 
-    private function authenticate()
-    {
-        $user = $this->hasAccount();
-        $user = $user->fetch(\PDO::FETCH_ASSOC);
-        setcookie('userId', $user['id'], time() + 360000, '/');
-    }
-
     private function checkUser()
     {
         $check = $this->hasAccount();
         if ($check->rowCount() <= 0) {
             $this->insert();
         }
-        $this->authenticate();
     }
 
     protected function insert()
@@ -50,19 +43,23 @@ class User extends Model
         }
     }
 
-    public function getUser()
+    public function comparePasswords($password)
     {
-        if (isset($_COOKIE['userId'])) {
-            $sgl = 'SELECT * FROM ' . $this->table . ' WHERE `id` = :id';
-
-            $user = $this->db->query($sgl, ['id' => $_COOKIE['userId']]);
-            return $user->fetch(\PDO::FETCH_ASSOC);
-        }
-        return '';
+        $user = $this->getUser();
+        return password_verify($password, $user['password']);
     }
 
-    public static function isAuthorized()
+    public function getUser()
     {
-        return !!($_COOKIE['userId'] ?? false);
+        $user = $this->hasAccount();
+        return $user->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function getUserById($id)
+    {
+        $sgl = 'SELECT * FROM ' . $this->table . ' WHERE `id` = :id';
+
+        $user = $this->db->query($sgl, ['id' => $id]);
+        return $user->fetch(\PDO::FETCH_ASSOC);
     }
 }

@@ -19,22 +19,24 @@ class MainController extends Controller
 
     public function mainAction()
     {
-        if (User::isAuthorized() === false) {
-            header('Location: /auth');
-        }
         $user = new User();
         $task = new Task();
 
-        $user = $user->getUser();
-        $task = $task->getTask($user['id']);
+        if (isset($_SESSION['userId'])) {
+            $user = $user->getUserById($_SESSION['userId']);
+            $task = $task->getTask($user['id']);
 
-        $vars = ['user' => $user, 'task' => $task];
-        $this->view->render('Главная страница', $vars);
+            $vars = ['user' => $user, 'task' => $task];
+            $this->view->render('Главная страница', $vars);
+        }
+        else{
+            header('Location: /auth');
+        }
     }
 
     public function logoutAction()
     {
-        setcookie('userId', null, -1, '/');
+        unset($_SESSION['userId']);
         header('Location: /');
     }
 
@@ -42,8 +44,8 @@ class MainController extends Controller
     {
         $description = $this->validatePostData('task');
 
-        if (isset($_COOKIE['userId'])) {
-            $userId = trim($_COOKIE['userId']);
+        if (isset($_SESSION['userId'])) {
+            $userId = trim($_SESSION['userId']);
         } else {
             $userId = '';
         }
@@ -70,8 +72,8 @@ class MainController extends Controller
     public function taskRemovalAction()
     {
         $taskId = $this->validatePostData('taskId');
-        if (isset($_COOKIE['userId'])) {
-            $userId = trim($_COOKIE['userId']);
+        if (isset($_SESSION['userId'])) {
+            $userId = trim($_SESSION['userId']);
         } else {
             $userId = '';
         }
@@ -94,13 +96,13 @@ class MainController extends Controller
     public function taskReadinessAction()
     {
         $taskId = $this->validatePostData('taskId');
-        if (isset($_COOKIE['userId'])) {
-            $userId = trim($_COOKIE['userId']);
+        if (isset($_SESSION['userId'])) {
+            $userId = trim($_SESSION['userId']);
         } else {
             $userId = '';
         }
 
-        if ($userId === ''){
+        if ($userId === '') {
             die('Непредвиденная ошибка');
         }
 
